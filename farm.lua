@@ -1,15 +1,24 @@
 --[[ Config ]]--
 local fieldDepth = 9
 local fieldWidth = 1
+local seedSlot = 1
 local fuelSlot = 16
 
--- [[ Main Action ]]--
+local function PlaceSlot(slot)
+  local currentSlot = turtle.getSelectedSlot()
+  if turtle.getItemCount(slot) > 0 then
+    turtle.placeDown()
+  else
+    print("Unable to place. Slot "..slot.." is empty.")
+  end
+  turtle.select(currentSlot)
+end
+
 local function DoWork()
   turtle.forward()
   turtle.digDown()
+  PlaceSlot(seedSlot)
 end
-
---[[ Utilities ]]--
 
 local function CheckFuel()
   local currentSlot = turtle.getSelectedSlot()
@@ -32,11 +41,11 @@ for x = 1,fieldWidth do
     CheckFuel()
     DoWork()
   end
-  turtle.turnLeft()
+  turtle.turnRight()
   if x < fieldWidth then
     turtle.forward()
   end
-  turtle.turnLeft()
+  turtle.turnRight()
 end
 
 --[[ Return to original position ]]--

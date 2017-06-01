@@ -1,8 +1,11 @@
 --[[ Config ]]--
 local fieldDepth = 9
-local fieldWidth = 1
+local fieldWidth = 2
 local seedSlot = 1
 local fuelSlot = 16
+--[[ End Config]]--
+
+local initialPosition = true
 
 local function PlaceSlot(slot)
   local currentSlot = turtle.getSelectedSlot()
@@ -14,10 +17,12 @@ local function PlaceSlot(slot)
   turtle.select(currentSlot)
 end
 
-local function DoWork()
-  turtle.forward()
+local function DoWork(shouldMove)
   turtle.digDown()
   PlaceSlot(seedSlot)
+  if shouldMove then
+    turtle.forward()
+  end
 end
 
 local function CheckFuel()
@@ -34,18 +39,66 @@ local function CheckFuel()
   turtle.select(currentSlot)
 end
 
---[[ Main Loop ]]--
-
-for x = 1,fieldWidth do
-  for y = 1,fieldDepth do
-    CheckFuel()
-    DoWork()
+local function UnloadCargo()
+  local currentSlot = turtle.getSelectedSlot()
+  for slot = 1,16 do
+    if slot ~= seedSlot and slot ~= fuelSlot then
+      turtle.select(slot)
+      turtle.dropDown()
+    end
   end
-  turtle.turnRight()
-  if x < fieldWidth then
+  turtle.select(currentSlot)
+end
+
+--[[ Main Loop ]]--
+local function Main()
+  turtle.forward()
+  for x = 1,fieldWidth do
+    for y = 1,fieldDepth do
+      CheckFuel()
+      if y == fieldDepth then
+        DoWork(false)
+      else
+        DoWork(true)
+      end
+    end
+
+    if x % 2 == 0 and x ~= fieldWidth then
+      turtle.turnLeft()
+    else
+      turtle.turnRight()
+    end
+
+    if x < fieldWidth then
+      turtle.forward()
+    end
+
+    if x == fieldWidth and y == nil then
+      if fieldWidth % 2 ~= 0 then
+        turtle.turnRight()
+      end
+    else
+      if x % 2 == 0 then
+        turtle.turnLeft()
+      else
+        turtle.turnRight()
+      end
+    end
+  end
+
+  --[[ Return to original position ]]--
+  if fieldWidth % 2 ~= 0 then
+    for y = 1,fieldDepth-1 do
+      turtle.forward()
+    end
+    turtle.turnRight()
+  end
+  for x = 1,fieldWidth-1 do
     turtle.forward()
   end
   turtle.turnRight()
+  turtle.back()
+  UnloadCargo()
 end
 
---[[ Return to original position ]]--
+Main()

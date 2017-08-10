@@ -1,6 +1,6 @@
 --[[ Config ]]--
 local fieldDepth = 9
-local fieldWidth = 2
+local fieldWidth = 9
 local seedSlot = 1
 local fuelSlot = 16
 --[[ End Config]]--
